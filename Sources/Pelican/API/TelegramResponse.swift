@@ -18,6 +18,8 @@ public class TelegramResponse {
 	public private(set) var success: Bool
 	// The data contained, if available.
 	public private(set) var data: Node?
+	// Explanation of error
+	public private(set) var description: String?
 
 	/**
 	Converts a response received from a Telegram Request to a response type.
@@ -30,6 +32,6 @@ public class TelegramResponse {
 		
 		self.data = node["result"]
 		self.success = node["ok"]!.bool!
-		
+		self.description = node["description"]?.string
 	}
 }
