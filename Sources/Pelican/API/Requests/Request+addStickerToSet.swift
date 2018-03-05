@@ -28,11 +28,14 @@ extension TelegramRequest {
 			request.query["mask_position"] = try! maskPosition.makeRow()
 		}
 		
-		guard let fileID = pngSticker.fileID else {
-			return nil
+		if let fileID = pngSticker.fileID {
+			request.query["file_id"] = fileID
+		}
+		else {
+			request.content = pngSticker as Any
 		}
 		
-		request.query["png_sticker"] = fileID
+//		request.query["png_sticker"] = fileID
 		request.content = pngSticker
 		
 		// Set the Request, Method and Content

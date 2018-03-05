@@ -25,11 +25,15 @@ extension TelegramRequest {
 			"emojis": emojis
 		]
 		
-		guard let fileID = sticker.fileID else {
-			pelicanPrint("only sending with id UploadLocation is supported."); return nil
+//		guard let fileID = sticker.fileID else {
+//			pelicanPrint("only sending with id UploadLocation is supported."); return nil
+//		}
+		if let fileID = sticker.fileID {
+			request.query["file_id"] = fileID
 		}
-		
-		request.query["png_sticker"] = fileID
+		else {
+			request.content = sticker as Any
+		}
 		
 		if let containsMasks = containsMasks {
 			request.query["contains_masks"] = containsMasks
