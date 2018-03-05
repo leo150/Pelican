@@ -77,15 +77,27 @@ public class CacheManager {
 	*/
 	
 	/** Attempts to retrieve the raw data for the requested resource.
-	- parameter upload: The file you wish to get raw data for.
+	- parameter path: The path to file you want get. If `path` contains "file://", it will be loaded with `FileManager`, othewise with `Bundle`.
 	*/
 	func fetchFile(path: String) throws -> Bytes? {
 		
 		if path.contains("://") {
+			guard let url = URL(string: path) else {
+				PLog.error(CacheError.BadPath.rawValue)
+				return nil
+			}
 			
+			// Try getting the bytes
+			do {
+				let image = try Data(contentsOf: url)
+				let bytes = image.makeBytes()
+				return bytes
+				
+			} catch {
+				PLog.error(CacheError.LocalNotFound.rawValue)
+				return nil
+			}
 		}
-	
-			
 		else {
 			if bundle == nil {
 				PLog.error(CacheError.BadBundle.rawValue)
@@ -103,10 +115,10 @@ public class CacheManager {
 			ext = "." + ext
 			
 			// Try getting the URL
-			guard let url = bundle!.url(forResource: name, withExtension: ext, subdirectory: path)
-				else {
-					PLog.error(CacheError.LocalNotFound.rawValue)
-					return nil
+			guard let url = bundle?.url(forResource: name, withExtension: ext, subdirectory: path)
+			else {
+				PLog.error(CacheError.LocalNotFound.rawValue)
+				return nil
 			}
 			
 			// Try getting the bytes
@@ -120,8 +132,6 @@ public class CacheManager {
 				return nil
 			}
 		}
-		
-		return nil
 	}
 	
 	/**
